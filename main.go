@@ -18,13 +18,13 @@ import (
 // ── Key Pool ──────────────────────────────────
 
 type KeyPool struct {
+	counter      uint64
 	keys         []string
 	cooldowns    []time.Time
 	disabled     []bool
 	requestCounts []int
 	lastUsed     []time.Time
 	mu           sync.Mutex
-	counter      uint64
 }
 
 func NewKeyPool(keys []string) *KeyPool {
